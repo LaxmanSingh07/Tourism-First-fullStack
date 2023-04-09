@@ -194,3 +194,10 @@ It is kind of pipline.
 `from the last middleware send the response to the client`
 
 This is known as the request-response cycle.
+
+
+`What is mounting`?
+
+
+Mounting is a way to create a mini-application within an exis
+
