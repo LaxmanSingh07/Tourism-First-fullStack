@@ -14,15 +14,30 @@ app.use(bodyParser.json()); // middleware
 app.use(express.urlencoded({extended:true})); // middleware
 
 
+//creating my own middleware
+
+app.use((req,res,next)=>{   // next is the function which will call the next middleware
+    console.log('Hello from the middleware');
+    next();
+});
+
+app.use((req,res,next)=>{
+    req.requestTime=new Date().toISOString();
+    next();
+})
+
+
 const tours=JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`));
 // console.log(`${__dirname}/dev-data/data/tours-simple.json`);
 
 
 
 const getAllTours=(req,res)=>{
+    console.log(req.requestTime);
     res.status(200).json({
         status:'success',
         results:tours.length, // it make sense when we are sending array of multiple result
+        requestedAt:req.requestTime,
         data:{
             // tours:tours// no need to write the if the key and value have same name 
             tours
@@ -138,6 +153,14 @@ const deleteTour=(req,res)=>{
 
 // chaining the route
 app.route('/api/v1/tours').get(getAllTours).post(createTour);
+// it will not call the middleware for the chaining route
+//orders really matters
+
+// app.use((req,res,next)=>{   // next is the function which will call the next middleware
+//     console.log('Hello from the middleware');
+//     next();
+// });
+
 app.route('/api/v1/tours/:id').get(getTour).patch(updateTour).delete(deleteTour);
 
 app.listen(port, () => {
