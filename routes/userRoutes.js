@@ -1,6 +1,10 @@
 const express=require('express');
 const userController=require('./../controllers/userController');  
 const router=express.Router();
+
+//params middleware
+
+
 router
     .route(`/`)
     .get(userController.getAllUsers)

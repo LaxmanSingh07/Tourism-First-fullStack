@@ -12,16 +12,16 @@ app.use(express.urlencoded({ extended: true })); // middleware
 
 //creating my own middleware
 
-// app.use((req, res, next) => {
-//   // next is the function which will call the next middleware
-//   console.log("Hello from the middleware");
-//   next();
-// });
+app.use((req, res, next) => {
+  // next is the function which will call the next middleware
+  console.log("Hello from the middleware");
+  next();
+});
 
-// app.use((req, res, next) => {
-//   req.requestTime = new Date().toISOString();
-//   next();
-// });
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
 
 
 // console.log(`${__dirname}/dev-data/data/tours-simple.json`);
@@ -49,13 +49,6 @@ app.use("/api/v1/users", userRouter);
 // });
 
 
-
-
-
-
-// app.listen(port, () => {
-//   console.log(`app running on port ${port}....`);
-// });
 
 //routing means the reponse the client request
 

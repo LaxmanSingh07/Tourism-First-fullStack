@@ -201,3 +201,15 @@ This is known as the request-response cycle.
 
 Mounting is a way to create a mini-application within an exis
 
+
+
+`Prams Middleware`:
+
+In this middleware we can access the params of the url.
+
+```js
+app.param('id', (req, res, next, val) => {
+  console.log(`Tour id is: ${val}`);
+  next();
+});
+```

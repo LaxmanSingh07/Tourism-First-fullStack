@@ -3,6 +3,17 @@ const express=require('express');
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
 );
+
+const checkID = (req, res, next, val) => {
+  if (req.params.id * 1 >= tours.length) {
+    console.log(val)
+    return res.status(404).json({
+      status: "fail",
+      message: "Invalid ID",
+  
+    })}
+  next();
+  };
 const getAllTours = (req, res) => {
   console.log(req.requestTime);
   res.status(200).json({
@@ -21,13 +32,6 @@ const getTour = (req, res) => {
 
   const id = req.params.id * 1; //nice trick to convert string to number
   // console.log(typeof id);
-
-  if (id >= tours.length) {
-    return res.status(404).json({
-      status: "fail",
-      message: "Invalid ID",
-    });
-  }
 
   const tour = tours.find((el) => el.id === id);
   if (!tour) {
@@ -77,12 +81,8 @@ const createTour = (req, res) => {
 };
 
 const updateTour = (req, res) => {
-  if (req.params.id * 1 >= tours.length) {
-    return res.status(404).json({
-      status: "fail",
-      message: "Invalid ID",
-    });
-  }
+
+  
 
   res.status(200).json({
     status: "sucess",
@@ -91,13 +91,6 @@ const updateTour = (req, res) => {
 };
 
 const deleteTour = (req, res) => {
-  if (req.params.id * 1 >= tours.length) {
-    return res.status(404).json({
-      status: "fail",
-      message: "Invalid ID",
-    });
-  }
-
   res.status(204).json({
     status: "sucess",
     data: null,
@@ -112,5 +105,5 @@ const deleteTour = (req, res) => {
 
 
 module.exports={
-    getAllTours,getTour,createTour,updateTour,deleteTour
+    getAllTours,getTour,createTour,updateTour,deleteTour,checkID
 }
