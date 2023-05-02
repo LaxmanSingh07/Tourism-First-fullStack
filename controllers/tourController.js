@@ -1,119 +1,130 @@
-const fs = require("fs");
+const Tour = require("./../models/tourModel");
 const express=require('express');
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
-);
 
-const checkID = (req, res, next, val) => {
-  if (req.params.id * 1 >= tours.length) {
-    console.log(val)
-    return res.status(404).json({
-      status: "fail",
-      message: "Invalid ID",
-  
-    })}
-  next();
-  };
 
-const checkBody = (req, res, next) => {
-  if (!req.body.name || !req.body.price) {
-    return res.status(400).json({
-      status: "fail",
-      message: "Missing name or price",
-    });
-  }
-    next();
-};
-const getAllTours = (req, res) => {
-  console.log(req.requestTime);
+const getAllTours =async (req, res) => {
+
+try{
+  const tours =await Tour.find()
+
   res.status(200).json({
     status: "success",
-    results: tours.length, // it make sense when we are sending array of multiple result
-    requestedAt: req.requestTime,
+    results: tours.length,
     data: {
-      // tours:tours// no need to write the if the key and value have same name
       tours,
     },
+
   });
+}
+catch(error)
+{
+  res.status(404).json({
+    status: "fail",
+    message: error,
+  });
+}
 };
 
-const getTour = (req, res) => {
-  // it will a automatically assign value to the variable
+const getTour =async (req, res) => {
 
-  const id = req.params.id * 1; //nice trick to convert string to number
-  // console.log(typeof id);
+try{
+  const tour=await Tour.findById(req.params.id); 
+  // Tour.findOne({_id:req.params.id}) //this is also correct way to do it
 
-  const tour = tours.find((el) => el.id === id);
-  if (!tour) {
-    return res.json(404).json({ data: tour });
-  }
-
-  // console.log(req.params); // these variable in the url is known as the parameter
   res.status(200).json({
     status: "sucess",
     data: {
       tour,
     },
   });
+
+}
+catch(error){
+  res.status(404).json({
+    status: "fail",
+    message: error,
+  });
+}
+  // const id = req.params.id * 1; //nice trick to convert string to number
+
 };
 
 // optional parameter ? using question
 
-const createTour = (req, res) => {
-  // console.log(req.body);
+const createTour = async (req, res) => {
 
-  //new object will automatically get new id with the help of the database
-  //I am doing just hit and trial here putting the length+1 new id to the object
+// AFTER MVC 
 
-  const newId = tours[tours.length - 1].id + 1;
+// const newTour=new Tour({})
+// newTour.save()   // it will only work on the model created from the schema
 
-  // it allow us to create a new object by mergeing previous object
+try{
+const newTour=await Tour.create(req.body);
 
-  const newTour = Object.assign({ id: newId }, req.body);
-  tours.push(newTour);
+res.status(201).json({
+  status: "sucess",
+  data: {
+    tour: newTour,
+  },
+});
 
-  console.log(req.body);
+}
+catch(err){
+  res.status(400).json({
+    status: "fail",
+    message: "Invalid data sent!",
+  });
+}
 
-  fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
-    JSON.stringify(tours),
-    (err) => {
-      // 201 stand for created
-      res.status(201).json({
-        status: "sucess",
-        data: {
-          tour: newTour,
-        },
-      });
-    }
-  );
-  // res.send('Done'); // always try to send somthing for sure
 };
 
-const updateTour = (req, res) => {
-
-  
+const updateTour = async (req, res) => {
+try{
+ const tour= await Tour.findByIdAndUpdate(req.params.id,req.body,{
+    new:true, //updated document will be returned
+    runValidators:true // it will run the validators again
+  })
 
   res.status(200).json({
     status: "sucess",
-    data: `<Updated tour here>...`,
+    data: {
+      // tour:tour
+      tour
+    }
   });
-};
+}
+  catch(err){
+    res.status(404).json({
+      status: "fail",
+      message: "Invalid data sent!",
+    });
+  }
+}
 
-const deleteTour = (req, res) => {
+const deleteTour = async(req, res) => {
+
+  try{
+    await Tour.findByIdAndDelete(req.params.id);
+    res.status(204).json({
+      status: "sucess",
+      data: null,
+    });
+    
+  }
+  catch(error){
+    res.status(404).json({
+      status: "fail",
+      message: "Invalid data sent!",
+    });
+  }
+
   res.status(204).json({
     status: "sucess",
     data: null,
   });
 };
 
-// app.get('/api/v1/tours',getAllTours);
-// app.get('/api/v1/tours/:id',getTour);
-// app.post('/api/v1/tours',createTour);
-// app.patch('/api/v1/tours/:id',updateTour);
-// app.patch('/api/v1/tours/:id',deleteTour);
-
 
 module.exports={
-    getAllTours,getTour,createTour,updateTour,deleteTour,checkID,checkBody
+    getAllTours,getTour,createTour,updateTour,deleteTour
 }

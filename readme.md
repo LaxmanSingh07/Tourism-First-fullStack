@@ -213,3 +213,73 @@ app.param('id', (req, res, next, val) => {
   next();
 });
 ```
+
+
+`WHY WE DON'T SPECIFY THE PUBLIC FOLDER IN THE ROUTE`?
+
+Because we can use the static middleware to serve the static files.
+
+```js
+app.use(express.static(`${__dirname}/public`));
+```
+
+
+`WHAT IS ENVIRONMENT VARIABLE`?
+
+Enviorment variable is a variable whose value is set outside the program, typically through functionality built into the operating system or microservice. They are part of the environment in which a process runs.
+
+`How to set enviorment variable`?
+
+```js
+
+export NODE_ENV=development
+```
+
+`How to get enviorment variable`?
+
+```js
+
+process.env.NODE_ENV
+```
+
+`How to set port`?
+
+```js
+
+export PORT=3000
+```
+
+
+
+#### process is an 
+
+
+
+what is .env file?
+.env is a file commonly used in web development to store configuration information for an application, such as API keys, database credentials, and other sensitive information. It is a plain text file that is located in the root directory of the project and is usually not tracked by version control systems. The .env file is used by the dotenv package to load environment variables into process.env.
+
+
+### What is ESlint?
+
+ESLint is a tool for identifying and reporting on patterns found in ECMAScript/JavaScript code, with the goal of making code more consistent and avoiding bugs. In many ways, it is similar to JSLint and JSHint with a few exceptions:
+
+npm uninstall
+npm i eslint prettier --save-dev 
+
+npm i eslint-config-prettier --save-dev    
+
+npm i eslint-plugin-prettier  --save-dev   
+
+npm i eslint-config-airbnb --save-dev    
+
+npm i eslint-plugin-node --save-dev    
+
+npm i eslint-plugin-node --save-dev    
+
+npm i eslint-plugin-jsx-a11y --save-dev
+
+npm i eslint-plugin-react --save-dev
+
+
+
+
