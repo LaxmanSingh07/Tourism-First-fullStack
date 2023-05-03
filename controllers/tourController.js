@@ -3,9 +3,33 @@ const express=require('express');
 
 
 const getAllTours =async (req, res) => {
+  try{
 
-try{
-  const tours =await Tour.find()
+  //query in the mongoose is a wrapper around the mongodb query
+  // console.log(req.query)
+
+
+
+  const tours=await Tour.find(
+    req.query
+); // it will return all the documents in the collection
+
+
+  // const tours =await Tour.find()
+
+
+
+  //let's try with the help of the mongoose 
+
+
+  //BUILD QUERY
+
+  // const tours=await Tour.find()
+  // .where('duration').equals(5)
+  // .where('difficulty').equals('easy');
+
+
+
 
   res.status(200).json({
     status: "success",
@@ -72,7 +96,7 @@ res.status(201).json({
 catch(err){
   res.status(400).json({
     status: "fail",
-    message: "Invalid data sent!",
+    message: "error",
   });
 }
 
@@ -96,7 +120,7 @@ try{
   catch(err){
     res.status(404).json({
       status: "fail",
-      message: "Invalid data sent!",
+      message: err 
     });
   }
 }

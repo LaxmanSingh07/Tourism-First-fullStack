@@ -184,4 +184,13 @@ $regex: Matches documents where a field matches a specified regular expression. 
 * $not
 * $expr
 
-//
+
+
+// DATABASE QUERIES WITH THE HELP OF THE MONGOOSE 
+
+
+
+## PAGINATION IN MONGODB
+
+* Pagination is the process of dividing a dataset, or a query response, into discrete pages. In web applications, pagination is often performed server-side. In this case, the server returns a subset of the dataset, along with a token that the client application can use to retrieve the next or previous page.
+

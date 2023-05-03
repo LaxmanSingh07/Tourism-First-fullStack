@@ -27,10 +27,19 @@ const getAllUsers = (req, res) => {
   };
   
   const deleteUser = (req, res) => {
-    res.status(500).json({
-      status: "error",
-      message: "This route is not yet defined",
-    });
+    try{
+
+      res.status(500).json({
+        status: "error",
+        message: "This route is not yet defined",
+      });
+    }
+    catch(error){
+      res.status(404).json({
+        status: "fail",
+        message: "Invalid data sent!",
+      });
+    }
   };
 
   module.exports = {
