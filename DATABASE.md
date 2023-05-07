@@ -190,7 +190,55 @@ $regex: Matches documents where a field matches a specified regular expression. 
 
 
 
+
+
+
+
+## ADVANCED FILTERING IN MONGODB 
+
+* MongoDB provides a rich query language and extensive documentation for working with queries. In this lesson, we'll explore some of the more advanced filtering options available in MongoDB.
+
+127.0.0.1:3000/api/v1/tours?duration[gte]=5&difficulty=easy 
+
+By the help of the given url we can filter the data in the database. 
+
+
+## SORTING IN MONGODB
+
+* In Mongodb sorting is done by the help of the sort() function. 
+
+`127.0.0.1:3000/api/v1/tours?price=sort`
+
+## FIELD LIMITING IN MONGODB
+
+* In Mongodb field limiting is done by the help of the select() function. 
+
+`It is used to select the fields that we want to show in the response.`
+
+for the client it is always recommended to limit the fields that we want to show in the response. Otherwise it will reduce the bandwidth of the server.
+
+Data heavy data set
+
+
 ## PAGINATION IN MONGODB
 
-* Pagination is the process of dividing a dataset, or a query response, into discrete pages. In web applications, pagination is often performed server-side. In this case, the server returns a subset of the dataset, along with a token that the client application can use to retrieve the next or previous page.
+* In Mongodb pagination is done by the help of the skip() and limit() function. 
 
+In General Pagination means that we are not sending all the data at once. We are sending the data in chunks. 
+
+
+Example :
+
+```
+
+```
+
+
+## ALIASING IN MONGODB
+
+* In Mongodb aliasing is done by the help of the aggregate() function.
+  
+It is used to change the name of the fields in the response.
+
+
+It is used for that data which is very famous 
