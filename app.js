@@ -3,6 +3,8 @@ const express = require('express');
 const morgan = require('morgan');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const AppError = require('./utils/appError');
+const globalErrorHandler=require('./controllers/errorController');
 // const port = 3000;
 const app = express();
 
@@ -14,41 +16,34 @@ app.use(bodyParser.json()); // middleware
 app.use(express.urlencoded({ extended: true })); // middleware
 app.use(express.static(`${__dirname}/public`)); // middleware
 
-//creating my own middleware
-
-app.use((req, res, next) => {
-  // next is the function which will call the next middleware
-  // console.log("Hello from the middleware");
-  next();
-});
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
 });
 
-// console.log(`${__dirname}/dev-data/data/tours-simple.json`);
-
-//Route handler
-
-// const tourRouter = express.Router();
-// const userRouter = express.Router();
 
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
-//mouting a router to a route
-
-// chaining the route
-
-// it will not call the middleware for the chaining route
-//orders really matters
-
-// app.use((req,res,next)=>{   // next is the function which will call the next middleware
-//     console.log('Hello from the middleware');
-//     next();
+app.all('*', (req, res, next) => {
+//   res.status(404).json({
+//     status: "fail",
+//     message: `Can't find ${req.originalUrl} on this server!`
+    
 // });
 
-//routing means the reponse the client request
+// const err=new Error(`Can't find ${req.originalUrl} on this server!`);
+
+  // err.status='fail';
+  // err.statusCode=404;
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`)); // if we pass anything in the next function then express will automatically assume that it is an error and it will skip all the other middlewares in the middleware stack and send the error to the global error handling middleware
+
+});
+
+// error handling middleware
+
+app.use(globalErrorHandler);
+
 
 module.exports = app;
