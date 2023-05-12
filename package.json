@@ -6,7 +6,7 @@
   "scripts": {
     "start:dev": "npx nodemon server.js",
     "start:prod": "set NODE_ENV=production&& node server.js",
-    "debug":"ndb server.js"
+    "debug": "ndb server.js"
   },
   "author": "Laxman",
   "license": "ISC",
@@ -21,7 +21,6 @@
   },
   "devDependencies": {
     "eslint-config-airbnb": "^19.0.4",
-    "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-jsx-a11y": "^6.7.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.2.1",

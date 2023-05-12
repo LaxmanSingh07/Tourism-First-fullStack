@@ -1,8 +1,9 @@
-class AppError extends Error
+/* eslint-disable prettier/prettier */
+class AppError extends Error // ERROR IS THE PARENT CLASS OF THE ALL THE
 {
     constructor(message,statusCode)
     {
-        super(message);
+        super(message); //
         this.statusCode=statusCode;
         this.status=`${statusCode}`.startsWith('4')?'fail':'error';
         this.isOperational=true; // this is used to check if the error is operational or not

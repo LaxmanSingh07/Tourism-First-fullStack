@@ -21,3 +21,18 @@ Customizable REPL environment with tab-completion and syntax highlighting
 OPERATIONAL ERRORS: Errors that we can predict and handle.
 
 PROGRAMMING ERRORS: Errors that we can't predict and handle or difficult to handle.
+
+
+
+
+#### WHAT IS STACK TRACE?
+
+A stack trace is a report of the active stack frames at a certain point in time during the execution of a program. Programmers commonly use stack tracing during interactive and post-mortem debugging.
+
+
+
+```JS
+ Error.captureStackTrace(this,this.constructor);
+
+```
+

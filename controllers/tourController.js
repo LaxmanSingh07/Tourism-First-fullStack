@@ -1,144 +1,168 @@
-const Tour = require("./../models/tourModel");
-const APIFeatures=require('./../utils/apiFeatures');
+const AppError = require('../utils/appError');
+const Tour = require('./../models/tourModel');
+const APIFeatures = require('./../utils/apiFeatures');
+const catchAsync = require('./../utils/catchAsync');
 const aliasTopTours = (req, res, next) => {
-  req.query.limit = "5";
-  req.query.sort = "-ratingsAverage,price";
-  req.query.fields = "name,price,ratingsAverage,summary,difficulty";
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
   next();
 };
 
-const getAllTours =async (req, res) => {
-  try{
-
-    console.log("hello");
-    const features=new APIFeatures(Tour.find(),req.query)
+const getAllTours = catchAsync(async (req, res, next) => {
+  const features = new APIFeatures(Tour.find(), req.query)
     .filter()
     .sort()
     .limitFields()
     .paginate();
 
-  const tours=await features.query;
+  const tours = await features.query; 
+  //if you are searching some categories which doesn't exists then it is not a good practice to show the 404 
+  
   res.status(200).json({
-    status: "success",
+    status: 'success',
     results: tours.length,
     data: {
       tours,
     },
-
-
-
-
   });
-}
-catch(error)
-{
-  res.status(404).json({
-    status: "fail",
-    message: error,
-  });
-}
-};
+});
 
-const getTour =async (req, res) => {
+const getTour = catchAsync(async (req, res, next) => {
+  const tour = await Tour.findById(req.params.id);
 
-try{
-  const tour=await Tour.findById(req.params.id); 
-  // Tour.findOne({_id:req.params.id}) //this is also correct way to do it
-
+  if (!tour) {
+    return next(new AppError('No tour found with that ID', 404));
+  }
   res.status(200).json({
-    status: "sucess",
+    status: 'sucess',
     data: {
       tour,
     },
   });
-
-}
-catch(error){
-  res.status(404).json({
-    status: "fail",
-    message: error,
-  });
-}
-  // const id = req.params.id * 1; //nice trick to convert string to number
-
-};
-
-// optional parameter ? using question
-
-const createTour = async (req, res) => {
-
-// AFTER MVC 
-
-// const newTour=new Tour({})
-// newTour.save()   // it will only work on the model created from the schema
-
-try{
-const newTour=await Tour.create(req.body);
-console.log(req.body);
-res.status(201).json({
-  status: "sucess",
-  data: {
-    tour: newTour,
-  },
 });
 
-}
-catch(err){
-  res.status(400).json({
-    status: "fail",
-    message: "error",
+const createTour = catchAsync(async (req, res, next) => {
+  const newTour = await Tour.create(req.body);
+  console.log(req.body);
+  res.status(201).json({
+    status: 'sucess',
+    data: {
+      tour: newTour,
+    },
   });
-}
+});
 
-};
-
-const updateTour = async (req, res) => {
-try{
- const tour= await Tour.findByIdAndUpdate(req.params.id,req.body,{
-    new:true, //updated document will be returned
-    runValidators:true // it will run the validators again
-  })
+const updateTour = catchAsync(async (req, res, next) => {
+  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+    new: true, //updated document will be returned
+    runValidators: true, // it will run the validators again
+  });
+  if (!tour) {
+    return next(new AppError('No tour found with that ID', 404));
+  }
 
   res.status(200).json({
-    status: "sucess",
+    status: 'sucess',
     data: {
-      // tour:tour
-      tour
-    }
+      tour,
+    },
   });
-}
-  catch(err){
-    res.status(404).json({
-      status: "fail",
-      message: err 
-    });
-  }
-}
+});
 
-const deleteTour = async(req, res) => {
-
-  try{
-    await Tour.findByIdAndDelete(req.params.id);
-    res.status(204).json({
-      status: "sucess",
-      data: null,
-    });
-    
+const deleteTour = catchAsync(async (req, res, next) => {
+  const tour = await Tour.findByIdAndDelete(req.params.id);
+  if (!tour) {
+    return next(new AppError('No tour found with that ID', 404));
   }
-  catch(error){
-    res.status(404).json({
-      status: "fail",
-      message: "Invalid data sent!",
-    });
-  }
-
   res.status(204).json({
-    status: "sucess",
+    status: 'sucess',
     data: null,
   });
+});
+
+const getTourStats = catchAsync(async (req, res, next) => {
+  const stats = await Tour.aggregate([
+    {
+      $match: { ratingsAverage: { $gte: 4.5 } },
+    },
+    {
+      $group: {
+        _id: '$difficulty',
+        numTours: { $sum: 1 },
+        numRatings: { $sum: '$ratingsQuantity' },
+        avgRating: { $avg: '$ratingsAverage' },
+        avgPrice: { $avg: '$price' },
+        minPrice: { $min: '$price' },
+        maxPrice: { $max: '$price' },
+      },
+    },
+    {
+      $sort: { avgPrice: 1 },
+    },
+    // {
+    //   $match:{_id:{$ne:'easy'}}
+    // }
+  ]);
+  res.status(200).json({
+    status: 'success',
+    data: {
+      stats,
+    },
+  });
+});
+
+const getMonthlyPlan = catchAsync(async (req, res, next) => {
+  const year = req.params.year * 1;
+  const plan = await Tour.aggregate([
+    {
+      $unwind: '$startDates', // it will deconstruct the array field from the input documents and then output one document for each element of the array
+    },
+    {
+      $match: {
+        startDates: {
+          $gte: new Date(`${year}-01-01`),
+          $lte: new Date(`${year}-12-31`),
+        },
+      },
+    },
+    {
+      $group: {
+        _id: { $month: '$startDates' },
+        numTourStarts: { $sum: 1 },
+        tours: { $push: '$name' },
+      },
+    },
+    {
+      $addFields: { month: '$_id' },
+    },
+    {
+      $project: {
+        _id: 0,
+      },
+    },
+    {
+      $sort: { numTourStarts: -1 },
+    },
+    {
+      $limit: 12,
+    },
+  ]);
+  res.status(200).json({
+    status: 'success',
+    data: {
+      plan,
+    },
+  });
+});
+
+module.exports = {
+  getAllTours,
+  getTour,
+  createTour,
+  updateTour,
+  deleteTour,
+  aliasTopTours,
+  getTourStats,
+  getMonthlyPlan,
 };
-
-
-module.exports={
-    getAllTours,getTour,createTour,updateTour,deleteTour,aliasTopTours
-}
