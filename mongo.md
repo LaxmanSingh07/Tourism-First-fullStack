@@ -137,7 +137,8 @@ schema.post('save', function(doc, next) {
 
 ```
 
-`Post middleware ` function executes after all of the pre middleware functions have completed.
+- save only work for the .save() and .create() method not for the update method
+  `Post middleware ` function executes after all of the pre middleware functions have completed.
 
 - we don't have access to this keyword in the post middleware function
 
@@ -145,7 +146,6 @@ Notes:
 
 - we can have multiple pre and post middleware functions for a single hook;
   `**hook**` : is an event in the document lifecycle
-
 
 ## QUERY MIDDLEWARE
 
@@ -161,6 +161,7 @@ schema.pre('find', function(next) {
 });
 
 ```
+
 ## AGGREGATE MIDDLEWARE
 
 - That can act on the currently processed aggregate.
@@ -175,7 +176,6 @@ schema.pre('aggregate', function(next) {
 });
 
 ```
-
 
 ## Data Validation_bUILT IN VALIDATORS
 
@@ -201,4 +201,12 @@ schema.pre('aggregate', function(next) {
 - type: String
 - immutable: true
 
+## DATA VALIDATION CUSTOM VALIDATORS
 
+using the validate property
+
+Notes:
+
+- we can't use arrow function in the validate property
+- we can't use the this keyword in the validate property
+- the validate property will not work on the update operation

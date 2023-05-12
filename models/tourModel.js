@@ -2,8 +2,9 @@
 
 //in order to create a model we need to create a schema
 //here is the schema
-const mongoose = require('mongoose');
 const slugify = require('slugify');
+const mongoose = require('mongoose');
+const validator = require('validator');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -13,6 +14,8 @@ const tourSchema = new mongoose.Schema(
       unique: true, // same name cannot be repeated
       maxlength: [40, 'A tour name must have less or equal than 40 characters'],
       minlength: [10, 'A tour name must have more or equal than 10 characters'],
+      // validate: [validator.isAlpha, 'Tour name must only contain characters'], // it will check if the name contains only characters
+
     },
     slug: String,
     duration: {
@@ -26,17 +29,17 @@ const tourSchema = new mongoose.Schema(
     difficulty: {
       type: String,
       required: [true, 'A tour must have a difficulty'],
-      enum: { // it is used to specify the values that are allowed for the field
+      enum: {
+        // it is used to specify the values that are allowed for the field
         values: ['easy', 'medium', 'difficult'],
         message: 'Difficulty is either: easy, medium, difficult',
-      }
+      },
     },
     ratingsAverage: {
       type: Number,
       default: 4.5,
       min: [1, 'Rating must be above or equal 1.0'], // validator
       max: [5, 'Rating must be below or equal to 5.0'], // validator
-
     },
     ratingsQuantity: {
       type: Number,
@@ -46,7 +49,16 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'A tour must have a price'], //this is a validator if the price is not provided then it will throw an error
     },
-    priceDiscount: Number,
+    priceDiscount: {
+      type: Number,
+      validate: {
+        // this is a validator if the price is less than the price then it will throw an error
+        validator: function (val) {
+          return val < this.price; // 100<200
+        },
+        message: `Discount price ({VALUE}) should be below regular price`, // this is internal to mongoose not with js so we can use the value keyword
+      },
+    },
     summary: {
       type: String,
       trim: true, // it will remove all the white spaces from the beginning and end of the string
