@@ -11,6 +11,8 @@ const tourSchema = new mongoose.Schema(
       type: String,
       required: [true, 'A tour must have a name'], //second is the error message
       unique: true, // same name cannot be repeated
+      maxlength: [40, 'A tour name must have less or equal than 40 characters'],
+      minlength: [10, 'A tour name must have more or equal than 10 characters'],
     },
     slug: String,
     duration: {
@@ -24,10 +26,17 @@ const tourSchema = new mongoose.Schema(
     difficulty: {
       type: String,
       required: [true, 'A tour must have a difficulty'],
+      enum: { // it is used to specify the values that are allowed for the field
+        values: ['easy', 'medium', 'difficult'],
+        message: 'Difficulty is either: easy, medium, difficult',
+      }
     },
     ratingsAverage: {
       type: Number,
       default: 4.5,
+      min: [1, 'Rating must be above or equal 1.0'], // validator
+      max: [5, 'Rating must be below or equal to 5.0'], // validator
+
     },
     ratingsQuantity: {
       type: Number,
@@ -117,9 +126,9 @@ tourSchema.post(/^find/, function (docs, next) {
 // AGGREGATION MIDDLEWARE
 
 tourSchema.pre('aggregate', function (next) {
- //adding a new stage at the beginning of the aggregation pipeline
+  //adding a new stage at the beginning of the aggregation pipeline
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
- 
+
   console.log(this.pipeline()); // this is the array of all the stages in the aggregation pipeline
 
   next();

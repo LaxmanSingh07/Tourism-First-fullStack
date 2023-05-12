@@ -175,3 +175,30 @@ schema.pre('aggregate', function(next) {
 });
 
 ```
+
+
+## Data Validation_bUILT IN VALIDATORS
+
+- required: true
+- minlength: 5
+- maxlength: 255
+- match: /pattern/
+- enum: ['web', 'mobile', 'network']
+- min: 5
+- max: 255
+- validate: /async validator function/
+- unique: true
+- sparse: true
+- lowercase: true
+- uppercase: true
+- trim: true
+- set: /custom setter function/
+- get: /custom getter function/
+- select: false
+- index: true
+- default: Date.now
+- ref: 'Genre'
+- type: String
+- immutable: true
+
+
