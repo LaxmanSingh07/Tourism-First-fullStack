@@ -145,3 +145,33 @@ Notes:
 
 - we can have multiple pre and post middleware functions for a single hook;
   `**hook**` : is an event in the document lifecycle
+
+
+## QUERY MIDDLEWARE
+
+- That can act on the currently processed query.
+- It is also called as the pre and post hooks because they are executed before and after an event.
+
+```JS
+
+const schema = new Schema(..);
+schema.pre('find', function(next) {
+  // do stuff
+  next();
+});
+
+```
+## AGGREGATE MIDDLEWARE
+
+- That can act on the currently processed aggregate.
+- It is also called as the pre and post hooks because they are executed before and after an event.
+
+```JS
+
+const schema = new Schema(..);
+schema.pre('aggregate', function(next) {
+  // do stuff
+  next();
+});
+
+```

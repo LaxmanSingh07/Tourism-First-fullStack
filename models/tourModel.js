@@ -59,6 +59,11 @@ const tourSchema = new mongoose.Schema(
     },
     startDates: [Date], //It is used for multiple dates
     /**2021-03-21,11:32 mongo will try to parse  */
+
+    secretTour: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     // it is used to add the options to the schema
@@ -84,11 +89,41 @@ tourSchema.pre('save', function (next) {
   next();
 });
 
-tourSchema.post('save', function (doc, next) {
-  console.log(doc);
+// tourSchema.post('save', function (doc, next) {
+//   console.log(doc);
+//   next();
+// });
+
+// QUERY MIDDLEWARE
+
+//find
+
+//IT WILL RUN FOR ALL THE STRING WHICH STARTS WITH THE WORD FIND
+
+tourSchema.pre(/^find/, function (next) {
+  this.find({ secretTour: { $ne: true } }); // it will find all the documents where secretTour is not equal to true
+
+  this.start = Date.now();
   next();
 });
 
+//it will run after the query has executed
+tourSchema.post(/^find/, function (docs, next) {
+  // console.log(docs);
+  // console.log(`Query took ${Date.now() - this.start} milliseconds`);
+  next();
+});
+
+// AGGREGATION MIDDLEWARE
+
+tourSchema.pre('aggregate', function (next) {
+ //adding a new stage at the beginning of the aggregation pipeline
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+ 
+  console.log(this.pipeline()); // this is the array of all the stages in the aggregation pipeline
+
+  next();
+});
 
 const Tour = mongoose.model('Tour', tourSchema); // this is convention to use capital letter for model name
 

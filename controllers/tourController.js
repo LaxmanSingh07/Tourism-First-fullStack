@@ -16,9 +16,9 @@ const getAllTours = catchAsync(async (req, res, next) => {
     .limitFields()
     .paginate();
 
-  const tours = await features.query; 
-  //if you are searching some categories which doesn't exists then it is not a good practice to show the 404 
-  
+  const tours = await features.query;
+  //if you are searching some categories which doesn't exists then it is not a good practice to show the 404
+
   res.status(200).json({
     status: 'success',
     results: tours.length,
@@ -90,7 +90,8 @@ const getTourStats = catchAsync(async (req, res, next) => {
       $match: { ratingsAverage: { $gte: 4.5 } },
     },
     {
-      $group: { // it is used to group documents together
+      $group: {
+        // it is used to group documents together
         _id: '$difficulty',
         numTours: { $sum: 1 },
         numRatings: { $sum: '$ratingsQuantity' },
@@ -130,7 +131,8 @@ const getMonthlyPlan = catchAsync(async (req, res, next) => {
       },
     },
     {
-      $group: { // group is used to group documents together
+      $group: {
+        // group is used to group documents together
         _id: { $month: '$startDates' },
         numTourStarts: { $sum: 1 },
         tours: { $push: '$name' },
