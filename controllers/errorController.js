@@ -22,7 +22,7 @@ const sendErrorProd = (err, res) => {
     console.log("Error",err);
 
     //2> Send generate messge 
-    2
+    
     res.status(500).json({
       status: 'error',
       message: 'Something went very wrong',
@@ -38,6 +38,8 @@ module.exports = (err, req, res, next) => {
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV == 'production') {
+
+    if(err.name==='CastError') err=new AppError(`Invalid ${err.path}: ${err.value}.`,400);
     sendErrorProd(err, res);
   }
 };

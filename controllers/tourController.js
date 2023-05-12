@@ -81,13 +81,16 @@ const deleteTour = catchAsync(async (req, res, next) => {
   });
 });
 
+//Aggregation pipeline :   it is a set of different stages that we can use to transform our documents into aggregated results
+
 const getTourStats = catchAsync(async (req, res, next) => {
+  //array of stages : stages are nothing but objects
   const stats = await Tour.aggregate([
     {
       $match: { ratingsAverage: { $gte: 4.5 } },
     },
     {
-      $group: {
+      $group: { // it is used to group documents together
         _id: '$difficulty',
         numTours: { $sum: 1 },
         numRatings: { $sum: '$ratingsQuantity' },
@@ -107,13 +110,13 @@ const getTourStats = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: {
-      stats,
+      stats, // we can also write stats:stats
     },
   });
 });
 
 const getMonthlyPlan = catchAsync(async (req, res, next) => {
-  const year = req.params.year * 1;
+  const year = req.params.year * 1; // converting string into a number
   const plan = await Tour.aggregate([
     {
       $unwind: '$startDates', // it will deconstruct the array field from the input documents and then output one document for each element of the array
@@ -127,22 +130,22 @@ const getMonthlyPlan = catchAsync(async (req, res, next) => {
       },
     },
     {
-      $group: {
+      $group: { // group is used to group documents together
         _id: { $month: '$startDates' },
         numTourStarts: { $sum: 1 },
         tours: { $push: '$name' },
       },
     },
     {
-      $addFields: { month: '$_id' },
+      $addFields: { month: '$_id' }, // it will add a new field to the document
     },
     {
       $project: {
-        _id: 0,
+        _id: 0, // it will hide the id field
       },
     },
     {
-      $sort: { numTourStarts: -1 },
+      $sort: { numTourStarts: -1 }, // it will sort the documents -1
     },
     {
       $limit: 12,
