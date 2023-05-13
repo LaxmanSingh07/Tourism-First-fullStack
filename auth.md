@@ -107,3 +107,24 @@ send a json web token as a header
 Example:
 
 Authorization : Bearer (token)
+
+
+
+promisify in nodejs :
+
+
+It is used to convert the callback based function to promise based function
+
+- Error in json web token
+
+invalid signature
+
+
+
+## AVDANCE POSTMON SETUP
+
+## AUTHORIZATION 
+
+- Authorization is the process of verifying what a user has access to.
+- Authentication is the process of verifying who a user is.
+- 

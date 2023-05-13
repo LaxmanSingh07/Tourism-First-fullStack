@@ -1,7 +1,9 @@
+const { promisify } = require('util'); // it is a built in module
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const jwt = require('jsonwebtoken');
 const AppError = require('./../utils/appError');
+const exp = require('constants');
 
 console.log(User);
 
@@ -19,6 +21,8 @@ exports.signup = catchAsync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
+    passwordChangedAt:req.body.passwordChangedAt,
+    role:req.body.role
   });
 
   const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
@@ -77,13 +81,44 @@ exports.protect = catchAsync(async (req, res, next) => {
       new AppError('You are not logged in! Please log in to get access', 401)
     );
   }
-  
 
   //2) Verification token
 
-  //3) Check if user still exists
+  // (promisefied version of the verify method)
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET); //
+  console.log(decoded);
 
+  //3) Check if user still exists
+  const currUser = await User.findById(decoded.id);
+  if (!currUser) {
+    return next(
+      new AppError('The user belonging to this token does no longer exist', 401)
+    );
+  }
   //4) Check if user changed password after the token was issued
 
+  if (currUser.changeedPasswordAfter(decoded.iat)) {
+    //.iat is issued at (time )
+    return next(
+      new AppError('User recently changed password! Please log in again', 401)
+    );
+  }
+
+  //GRANT ACCESS TO PROTECTED ROUTE
+  req.user = currUser; // we are passing the user to the next middleware
   next();
 });
+
+
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    //roles is an array ['admin','lead-guide']
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError('You do not have permission to perform this action!', 403)
+      );
+    }
+    next();
+  };
+}

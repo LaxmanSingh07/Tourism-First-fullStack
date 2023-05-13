@@ -78,6 +78,7 @@ const deleteTour = catchAsync(async (req, res, next) => {
   res.status(204).json({
     status: 'sucess',
     data: null,
+    message: 'Tour deleted successfully',
   });
 });
 
