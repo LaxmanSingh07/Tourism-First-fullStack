@@ -36,3 +36,16 @@ A stack trace is a report of the active stack frames at a certain point in time 
 
 ```
 
+### TYPES OF ERRORS
+
+1. Operational Errors
+2. Programming Errors
+
+
+### OPERATIONAL ERRORS
+
+Errors that we can predict and handle.
+
+### PROGRAMMING ERRORS
+
+Errors that we can't predict and handle or difficult to handle.
