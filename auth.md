@@ -90,3 +90,20 @@ To create the signature part you have to take the encoded header, the encoded pa
 `without the secret ,one will be able to mainpuate the JWT DATA because they can't create a valid signature to new data`
 
 
+## singup and login 
+
+
+
+### What is protected routes 
+
+Protected routes are routes that only logged in users can access. If a user is not logged in and tries to access a protected route, the application will redirect them to the login page.
+
+### test-headers 
+
+send a json web token as a header 
+
+`There is a standard to that ,we have to send the token in the header as a key value pair`
+
+Example:
+
+Authorization : Bearer (token)
