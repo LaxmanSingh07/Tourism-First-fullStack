@@ -140,3 +140,21 @@ invalid signature
 
   
 `createPasswordResetToken` function is used to create the reset token and send it to the user's email address.
+
+
+
+## NODEMAILER 
+
+It is a npm package that is used to send the email to the user
+
+
+There are basically two types of email services
+
+- Sendgrid
+- Mailgun
+
+
+## How to send the email to the user
+
+- Create an account on the sendgrid
+- 
