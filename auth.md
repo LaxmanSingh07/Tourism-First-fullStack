@@ -78,7 +78,7 @@ To create the signature part you have to take the encoded header, the encoded pa
 
 - The client receives the JWT and sends it back to the server on every request.
 - The server then takes the JWT and splits it into its three parts: header, payload, and signature.
-- The server then takes the header and payload and runs them through the same signing algorithm that was used to create the signature. (compare of test signature and the signature that we have received from the client (original signature)))
+- The server then takes the header and payload and runs them through the same signing algorithm that was used to create the signature. (compare of test signature and the signature that we have received from the client (original signature))
 - If the signature that the server generates matches the signature that was sent with the JWT, then the server knows that the JWT is valid and can be trusted.
 - If the signature that the server generates does not match the signature that was sent with the JWT, then the server knows that the JWT is invalid and cannot be trusted.
 
@@ -127,4 +127,16 @@ invalid signature
 
 - Authorization is the process of verifying what a user has access to.
 - Authentication is the process of verifying who a user is.
-- 
+
+
+### RestPassword FUNCTIONALITY
+
+- User enters their email address
+- The server generates a reset token and sends it to the user's email address
+- The user clicks on the link in the email and is redirected to the reset password page
+- The user enters their new password and submits the form
+- The server verifies the reset token and updates the user's password
+- The user is redirected to the login page
+
+  
+`createPasswordResetToken` function is used to create the reset token and send it to the user's email address.

@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator');
 
@@ -16,10 +17,10 @@ const userSchema = new mongoose.Schema({
     validate: [validator.isEmail, 'Please provide a valid email'],
   },
   photo: String,
-  role:{
-    type:String,
-    enum:['user','guide','lead-guide','admin'],
-    default:'user'
+  role: {
+    type: String,
+    enum: ['user', 'guide', 'lead-guide', 'admin'],
+    default: 'user',
   },
   password: {
     type: String,
@@ -38,7 +39,9 @@ const userSchema = new mongoose.Schema({
       message: 'Passwords are not the same',
     },
   },
-  passwordChangedAt:Date
+  passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date, // password reset token will expire after 10 minutes (10*60*1000)
 });
 
 //pre-save middleware
@@ -66,16 +69,39 @@ userSchema.methods.correctPassword = async function (
   // both the passwords are encrypted then it will compare them
 };
 
-userSchema.methods.changeedPasswordAfter=function(JWTTimestamp){
-  if(this.passwordChangedAt){ // if the password is changed
-    const changedTimestamp=parseInt(this.passwordChangedAt.getTime()/1000,10); // it will convert the date into the seconds (base 10)
-    console.log(changedTimestamp,JWTTimestamp);
-    return JWTTimestamp<changedTimestamp; // if the token is issued before the password is changed then it will return true
+userSchema.methods.changeedPasswordAfter = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    // if the password is changed
+    const changedTimestamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    ); // it will convert the date into the seconds (base 10)
+    console.log(changedTimestamp, JWTTimestamp);
+    return JWTTimestamp < changedTimestamp; // if the token is issued before the password is changed then it will return true
   }
 
   //false means not changed
   return false;
-}
+};
+
+//creating a password reset token
+
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex'); // it will create a random string
+  //we will encrypt this token and then we will store it in the database and then we will send it to the user
+  //never ever store the plain password reset token in the database
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex'); // it will create a hash of the reset token and then we will store it in the database
+  //sha256 is the algorithm that we are using to create the hash
+  // digest is the output of the hash
+
+    console.log({resetToken},this.passwordResetToken);
+  this.passwordResetToken=Date.now()+10*60*1000; // it will expire after 10 minutes
+
+  return resetToken; // this is the plain token that we will send to the user
+};
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;
