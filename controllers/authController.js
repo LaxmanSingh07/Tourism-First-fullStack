@@ -1,12 +1,12 @@
 const { promisify } = require('util'); // it is a built in module
+const crypto = require('crypto');
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const jwt = require('jsonwebtoken');
 const AppError = require('./../utils/appError');
-const send = require('./../utils/email');
 const sendEmail = require('./../utils/email');
 
-console.log(User);
+// console.log(User);
 
 //function to create a token
 
@@ -75,7 +75,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   ) {
     token = req.headers.authorization.split(' ')[1];
   }
-  console.log(token);
+  // console.log(token);
 
   if (!token) {
     return next(
@@ -87,7 +87,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // (promisefied version of the verify method)
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET); //
-  console.log(decoded);
+  // console.log(decoded);
 
   //3) Check if user still exists
   const currUser = await User.findById(decoded.id);
@@ -142,11 +142,9 @@ exports.forgotPassword = async (req, res, next) => {
     'host'
   )}/api/v1/users/resetPassword/${resetToken}`;
 
-
-
   const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
 
-//  console.log(message);
+  //  console.log(message);
 
   try {
     // console.log(user.email)
@@ -155,6 +153,9 @@ exports.forgotPassword = async (req, res, next) => {
       subject: 'Your password reset token (valid for 10 minutes)',
       message,
     });
+
+
+    
 
     res.status(200).json({
       status: 'success',
@@ -174,7 +175,42 @@ exports.forgotPassword = async (req, res, next) => {
   }
 };
 
-
 exports.resetPassword = async (req, res, next) => {
+  //1> Get user based on the token
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex'); // it will create a hash of the reset token and then we will store it in the database
+  //digest is used to convert the output of the hash into the hexadecimal format
 
-}
+  console.log(hashedToken);
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+  console.log(user)
+
+  //2> If token has not expired, and there is user, set the new password
+  if (!user) {
+    return next(new AppError('Token is invalid or has expired', 400));
+  }
+
+  user.password = req.body.password; // we are updating the password
+  user.passwordConfirm = req.body.passwordConfirm;
+
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save(); //we want the validators to run
+
+  //3> Update changedPasswordAt property for the user
+
+  //4> Log the user in, send JWT
+
+  const token = signToken(user._id);
+
+  res.status(200).json({
+    status: 'success',
+    token,
+  });
+
+};

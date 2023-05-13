@@ -59,6 +59,12 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+userSchema.pre('save', function (next) {
+  // it will run before the document is saved
+  if (!this.isModified('password') || this.isNew) return next(); // if the password is not modified or the document is new then it will return next
+  this.passwordChangedAt = Date.now() - 1000; // it will subtract 1 second from the current time
+  //I have subtracted 1 second because sometimes the  take a little bit of time to save the document to the database
+});
 //instance method: methods that are available on all the documents of a certain collection
 
 userSchema.methods.correctPassword = async function (
@@ -76,7 +82,7 @@ userSchema.methods.changeedPasswordAfter = function (JWTTimestamp) {
       this.passwordChangedAt.getTime() / 1000,
       10
     ); // it will convert the date into the seconds (base 10)
-    console.log(changedTimestamp, JWTTimestamp);
+    // console.log(changedTimestamp, JWTTimestamp);
     return JWTTimestamp < changedTimestamp; // if the token is issued before the password is changed then it will return true
   }
 
@@ -97,8 +103,8 @@ userSchema.methods.createPasswordResetToken = function () {
   //sha256 is the algorithm that we are using to create the hash
   // digest is the output of the hash
 
-    console.log({resetToken},this.passwordResetToken);
-  this.passwordResetToken=Date.now()+10*60*1000; // it will expire after 10 minutes
+  // console.log({resetToken},this.passwordResetToken);
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // it will expire after 10 minutes
 
   return resetToken; // this is the plain token that we will send to the user
 };
