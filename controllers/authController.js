@@ -16,6 +16,21 @@ const signToken = (id) => {
   }); // this sign method will return a token
 };
 
+const createSendToken = (user, statusCode, res) => {
+
+  const token = signToken(user._id);
+  console.log("Hello")
+  console.log(token);
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: {
+      user
+    },
+  });
+
+};
+
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -26,17 +41,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     role: req.body.role,
   });
 
-  const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
-
-  res.status(201).json({
-    status: 'success',
-    token,
-    data: {
-      user: newUser,
-    },
-  });
+  createSendToken(newUser, 201, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -58,12 +63,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
   // 3> if everything is ok, send token to client
 
-  const token = signToken(user._id);
-
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  createSendToken(user, 201, res);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -154,9 +154,6 @@ exports.forgotPassword = async (req, res, next) => {
       message,
     });
 
-
-    
-
     res.status(200).json({
       status: 'success',
       message: 'Token sent to email!',
@@ -188,7 +185,7 @@ exports.resetPassword = async (req, res, next) => {
     passwordResetToken: hashedToken,
     passwordResetExpires: { $gt: Date.now() },
   });
-  console.log(user)
+  console.log(user);
 
   //2> If token has not expired, and there is user, set the new password
   if (!user) {
@@ -206,11 +203,34 @@ exports.resetPassword = async (req, res, next) => {
 
   //4> Log the user in, send JWT
 
-  const token = signToken(user._id);
-
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
-
+  createSendToken(user, 200, res);
 };
+
+//this is only for the logged in user
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  //1> Get user from collection
+  const user = await User.findById(req.user.id).select('+password');
+  //2> check if posted current password is correct
+  
+  if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
+    return next(new AppError('Your current password is wrong', 401));
+  }
+
+  
+  // console.log(user);
+  
+  //3> if so, update password
+  
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  await user.save(); // we are not using the findByIdAndUpdate because we want the validators to run
+  
+  
+  // user.findByIdAndUpdate(); // we are not using the findByIdAndUpdate because we want the validators to run
+  
+  //4> log user in, send JWT
+  
+ 
+  createSendToken(user, 200, res);
+});

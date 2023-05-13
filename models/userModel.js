@@ -64,6 +64,7 @@ userSchema.pre('save', function (next) {
   if (!this.isModified('password') || this.isNew) return next(); // if the password is not modified or the document is new then it will return next
   this.passwordChangedAt = Date.now() - 1000; // it will subtract 1 second from the current time
   //I have subtracted 1 second because sometimes the  take a little bit of time to save the document to the database
+  next();
 });
 //instance method: methods that are available on all the documents of a certain collection
 

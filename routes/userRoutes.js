@@ -1,27 +1,32 @@
-const express=require('express');
-const userController=require('./../controllers/userController');  
-const {signup,login,forgotPassword,resetPassword}=require('./../controllers/authController');  
-const router=express.Router();
+const express = require('express');
+const {
+  getAllUsers,
+  createUser,
+  deleteUser,
+  updateUser,
+  updateMe,
+  getUser,
+} = require('./../controllers/userController');
+const {
+  signup,
+  login,
+  forgotPassword,
+  resetPassword,
+  protect,
+  updatePassword,
+} = require('./../controllers/authController');
+const router = express.Router();
 
-
-
-
-router.post('/signup',signup);
-router.post('/login',login);
-router.post('/forgotPassword',forgotPassword);
-router.patch('/resetPassword/:token',resetPassword);
+router.post('/signup', signup);
+router.post('/login', login);
+router.post('/forgotPassword', forgotPassword);
+router.patch('/resetPassword/:token', resetPassword);
 
 //params middleware
 
+router.patch('/updateMyPassword', protect, updatePassword);
+router.patch('/updateMe', protect, updateMe);
+router.route(`/`).get(getAllUsers).post(createUser);
+router.route(`/:id`).get(getUser).patch(updateUser).delete(deleteUser);
 
-router
-    .route(`/`)
-    .get(userController.getAllUsers)
-    .post(userController.createUser);
-router
-  .route(`/:id`)
-  .get(userController.getUser)
-  .patch(userController.updateUser)
-  .delete(userController.deleteUser);
-
-module.exports=router;
+module.exports = router;
