@@ -17,18 +17,30 @@ const signToken = (id) => {
 };
 
 const createSendToken = (user, statusCode, res) => {
-
   const token = signToken(user._id);
-  console.log("Hello")
-  console.log(token);
+  
+  //cookie options
+
+  const cookieOptions={
+      expires: new Date(
+        Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 100 // it will convert the days into milliseconds
+      ),
+      httpOnly: true, // it will make sure that the cookie cannot be accessed or modified in any way by the browser
+    }
+  
+  if(process.env.NODE_ENV==='production') cookieOptions.secure=true;//// it will send the cookie only on the encrypted connection
+
+  res.cookie('jwt', token, cookieOptions); // we are sending the cookie to the client
+
+//remove the password from the output
+user.password=undefined;
   res.status(statusCode).json({
     status: 'success',
     token,
     data: {
-      user
+      user,
     },
   });
-
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
@@ -212,25 +224,22 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   //1> Get user from collection
   const user = await User.findById(req.user.id).select('+password');
   //2> check if posted current password is correct
-  
+
   if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
     return next(new AppError('Your current password is wrong', 401));
   }
 
-  
   // console.log(user);
-  
+
   //3> if so, update password
-  
+
   user.password = req.body.password;
   user.passwordConfirm = req.body.passwordConfirm;
   await user.save(); // we are not using the findByIdAndUpdate because we want the validators to run
-  
-  
+
   // user.findByIdAndUpdate(); // we are not using the findByIdAndUpdate because we want the validators to run
-  
+
   //4> log user in, send JWT
-  
- 
+
   createSendToken(user, 200, res);
 });

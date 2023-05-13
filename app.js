@@ -5,12 +5,32 @@ const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const AppError = require('./utils/appError');
 const globalErrorHandler=require('./controllers/errorController');
+const rateLimit=require('express-rate-limit');
 // const port = 3000;
 const app = express();
 
+
+//GLOBAL MIDDLEWARES 
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+
+//limit the number of requests from the same IP
+
+const limiter=rateLimit({
+  max:3,
+  windowMs:60*60*1000, // 1hour in milliseconds. after 1 hour the user can make 100 requests again
+  message:'Too many requests from this IP, please try again in an hour!'
+}); // status code 429 is for too many requests automatically send by the rate limit package
+
+
+
+
+app.use("/api",limiter);
+
+
+
+
 // console.log(process.env.NODE_ENV);
 app.use(bodyParser.json()); // middleware
 app.use(express.urlencoded({ extended: true })); // middleware

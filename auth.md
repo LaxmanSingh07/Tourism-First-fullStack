@@ -194,3 +194,14 @@ There are basically two types of email services
 - use mongoose for mongodb (because of SchemaTypes)
 - Santize user input data 
 
+
+## What is Cookie 
+
+A cookie is a small piece of data that a server sends to the user's web browser. The browser may store it and send it back with the next request to the same server. Typically, it's used to tell if two requests came from the same browser — keeping a user logged-in, for example. It remembers stateful information for the stateless HTTP protocol.
+
+
+## What is Rate Limiting
+
+Rate limiting is a strategy for limiting an attacker's ability to send requests to a server or API. Rate limiting can be used to prevent denial-of-service attacks, brute-force password attacks, and other types of attacks.
+
+It the no of attempts of login from a ip address is more than a specific limit then we will block that ip address for a specific time period
