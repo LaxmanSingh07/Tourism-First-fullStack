@@ -42,6 +42,11 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date, // password reset token will expire after 10 minutes (10*60*1000)
+  active: { // this is for the deletion of the user
+    type: Boolean,
+    default: true,
+    select: false, // it will not show the active field in the output
+  },
 });
 
 //pre-save middleware
@@ -66,6 +71,19 @@ userSchema.pre('save', function (next) {
   //I have subtracted 1 second because sometimes the  take a little bit of time to save the document to the database
   next();
 });
+
+//query middleware
+
+userSchema.pre(/^find/, function (next) {
+  // this points to the current query
+  this.find({ active: { $ne: false } }); // it will find all the documents where the active field is not equal to false
+  next();
+});
+
+
+
+
+
 //instance method: methods that are available on all the documents of a certain collection
 
 userSchema.methods.correctPassword = async function (

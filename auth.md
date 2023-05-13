@@ -157,4 +157,40 @@ There are basically two types of email services
 ## How to send the email to the user
 
 - Create an account on the sendgrid
-- 
+
+
+
+## Security Best Practices and suggestions 
+
+1. Compromised database 
+
+- Strongly encrypted password with salt and hash (bcrypt)
+- Strongly encrypted password reset token (SHA-256)
+
+
+2. Brute force attacks 
+
+- Use rate limiting to limit the number of requests per IP
+- Implement a CAPTCHA to prevent bots from submitting forms
+- Implement maximum login attempts to prevent brute force attacks
+
+3. Cross-site scripting (XSS) attacks
+
+- Use a content security policy (CSP) to prevent XSS attacks
+- Use a cookie with the httpOnly flag to prevent access from JavaScript
+- Sanitize user input to prevent malicious code from being injected into the application
+- set speical http header to prevent the browser from loading the malicious code
+
+
+
+4. Denial-of-service (DoS) attacks 
+
+1. Implement rate limiting (express-rate-limit)
+2. Limit body payload (in body-parser)
+3. Avoid evil regular expressions (ReDoS)
+
+5. NoSQL injection attacks
+
+- use mongoose for mongodb (because of SchemaTypes)
+- Santize user input data 
+
