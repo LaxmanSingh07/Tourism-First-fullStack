@@ -19,6 +19,7 @@ class APIFeatures{
     sort(){
       if(this.queryString.sort)
       {
+        // console.log(this.queryString.sort); // this will print the array of strings
         const sortBy=this.queryString.sort.split(',').join(' '); // this will first split the string at the comma and then join it with a space
         this.query = this.query.sort(sortBy);
       }

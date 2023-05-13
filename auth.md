@@ -211,3 +211,48 @@ It the no of attempts of login from a ip address is more than a specific limit t
 
 
 Helmet is a collection of 14 smaller middleware functions that set HTTP response headers. Helmet helps you secure your Express apps by setting various HTTP headers. It's not a silver bullet, but it can help!
+
+
+## Data Sanitization
+
+Data sanitization is the process of cleaning user input to prevent malicious code from being injected into the application. Data sanitization is a good practice to implement in any application, but it's especially important in applications that accept user input.
+
+
+`Simulatoin of no sql query injection`
+
+
+```json
+
+{
+    "email":{"$gt":""},
+    "password":"pass1234"
+}
+
+```
+
+
+```
+npm i express-mongo-sanitize 
+npm i xss-clean
+```
+
+
+
+## Prevent Parameter Pollution
+
+Paramter pollution : 
+
+- Parameter pollution is an attack that injects parameters into a web application, usually through a URL. Parameter pollution can be used to bypass security filters, cause a denial-of-service, or execute arbitrary code.
+
+
+```bash
+``` 
+```
+npm i hpp  (hpp : http parameter pollution)
+
+
+```
+
+what is the whitelisting of the paramters: 
+
+- Whitelisting is the process of filtering out unwanted characters from user input. Whitelisting is a good practice to implement in any application, but it's especially important in applications that accept user input.
