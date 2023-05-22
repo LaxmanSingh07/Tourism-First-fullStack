@@ -1,13 +1,16 @@
 //this is an excercise nothing more than that 
 const mongoose = require('mongoose');
-const app = require('./app');
+const app = require('../../app');
 const Tour=require('./../../models/tourModel');
 const fs=require('fs');
+const User = require("../../models/userModel");
 require("dotenv").config();
 
-const DB = process.env.DATABASE.replace(
-  "<password>", process.env.DATABASE_PASSWORD
-);
+// const DB = process.env.DATABASE.replace(
+//   "<password>", process.env.DATABASE_PASSWORD
+// );
+const DB = process.env.DATABASE_LOCAL;
+const PORT = process.env.PORT || 3000;
 
 
 mongoose.connect(DB, {
@@ -27,8 +30,8 @@ mongoose.connect(DB, {
 
 
 // READ JSON FILE 
-
-const tours=JSON.parse(fs.readFileSync(`${__dirname}/tours-simple.json`,'utf-8')); 
+const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, "utf-8"));
+const tours=JSON.parse(fs.readFileSync(`${__dirname}/tours.json`,'utf-8')); 
 
 // IMPORT DATA INTO DB 
 
@@ -56,16 +59,27 @@ const deleteData=async()=>{
         console.log(err);
 
     }
+    process.exit();
 }
 
-console.log(process.argv); // this will print the array of arguments that we have passed in the terminal
 
 
 
+// console.log(process.argv); // this will print the array of arguments that we have passed in the terminal
 
 
 
-const PORT = process.env.PORT || 3000;
+if(process.argv[2]==='--import'){
+    importData();
+}
+else if(process.argv[2]==='--delete'){
+
+    deleteData();
+}
+
+
+
+// const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(`App running on PORT ${PORT}....`);

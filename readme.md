@@ -2,7 +2,6 @@
 
 This is a `tourism` `project` built with the MERN stack, which includes `MongoDB, Express, React, and Node.js`. The project uses `Pug` as the template engine for the frontend. The project aims to `provide` a `platform` for travelers to find and `book tours`, as well as for tour operators to showcase and manage their tours.
 
-
 ![](https://img.freepik.com/free-vector/desktop-smartphone-app-development_23-2148683810.jpg?size=626&ext=jpg)
 **`Note`**:
 
@@ -59,3 +58,63 @@ npm run start:prod
 ```
 
 This will start the proudction mode http://localhost:3000.
+
+# THE TOURISM PROJECT DATA MODEL
+
+1. Tours
+2. locations
+3. users
+4. reviews
+5. bookings
+
+```
+Users -----> reviews
+
+(1:Many)
+parent referencing
+
+```
+
+```     
+tours -----> reviews
+(1:Many)
+parent referencing
+```
+
+```
+
+tours---> locations
+
+(Few:Few)
+Embedding (intresnically linked)
+
+
+```
+
+```
+tours ----> users 
+(your guides)
+
+(FEW:FEW)
+child referencing
+or 
+embedding 
+
+```
+
+```
+tours ---> bookings 
+(1:Many)
+parent referencing
+
+```
+
+```
+users ---> bookings 
+(1:Many)
+parent referencing
+
+```
+
+
+```

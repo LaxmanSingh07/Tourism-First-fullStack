@@ -242,3 +242,8 @@ It is used to change the name of the fields in the response.
 
 
 It is used for that data which is very famous 
+
+
+## mergeParams 
+
+It is uses to merge the params of the parent router to the child router.

@@ -10,8 +10,10 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const reviewRouter = require('./routes/reviewRoutes');
 // const port = 3000;
 const app = express();
+
 
 //1 GLOBAL MIDDLEWARES
 
@@ -25,7 +27,7 @@ if (process.env.NODE_ENV === 'development') {
 
 //limit the number of requests from the same IP
 const limiter = rateLimit({
-  max: 3,
+  max: 100,
   windowMs: 60 * 60 * 1000, // 1hour in milliseconds. after 1 hour the user can make 100 requests again
   message: 'Too many requests from this IP, please try again in an hour!',
 }); // status code 429 is for too many requests automatically send by the rate limit package
@@ -69,6 +71,7 @@ app.use((req, res, next) => {
 //3 ROUTES
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter); // mounting the router
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`)); // if we pass anything in the next function then express will automatically assume that it is an error and it will skip all the other middlewares in the middleware stack and send the error to the global error handling middleware
