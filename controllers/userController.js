@@ -64,30 +64,17 @@ const updateMe = async (req, res, next) => {
   });
 };
 
-const getUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined',
-  });
-};
+
+const getUser=factory.getOne(User);
 
 const createUser = (req, res) => {
   res.status(500).json({
     status: 'error',
-    message: 'This route is not yet defined',
+    message: 'This route is not defined! please sign instead',
   });
 };
 
-// const updateUser = (req, res) => {
-//   res.status(500).json({
-//     status: 'error',
-//     message: 'This route is not yet defined',
-//   });
-// };
 
-
-//it is only for the admin
-//don't update passwords with this
 const updateUser= factory.updateOne(User);
 const deleteUser = factory.deleteOne(User)
 
