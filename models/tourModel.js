@@ -120,12 +120,6 @@ const tourSchema = new mongoose.Schema(
     ],
 
 
-    //don't use this approach because it will create a lot of problems
-    // reviews: [
-    //   {
-    //     type: mongoose.Schema.ObjectId,
-    //     ref: 'Review',
-    //   }]
   },
   {
     // it is used to add the options to the schema
@@ -133,6 +127,9 @@ const tourSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
+tourSchema.index({price:1,ratingsAverage:-1}); // 1 denotes the ascending order and -1 denotes the descending order
+tourSchema.index({slug:1}); 
 
 //the reason to use the regular function is that we need this keyword in this function
 
@@ -159,23 +156,6 @@ tourSchema.pre('save', function (next) {
   next();
 });
 
-// tourSchema.pre('save',async function (next) {
-// const guidesPromises= this.guides.map(async id => await User.findById(id));
-// this.guides=await Promise.all(guidesPromises); // to resolve all the promises
-
-//   next();
-// });
-
-// tourSchema.post('save', function (doc, next) {
-//   console.log(doc);
-//   next();
-// });
-
-// QUERY MIDDLEWARE
-
-//find
-
-//IT WILL RUN FOR ALL THE STRING WHICH STARTS WITH THE WORD FIND
 
 tourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } }); // it will find all the documents where secretTour is not equal to true

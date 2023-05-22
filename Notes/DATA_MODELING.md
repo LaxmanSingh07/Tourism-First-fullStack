@@ -203,3 +203,10 @@ localField: '_id' (_id is the name of the field in the tour model)
 ## handler factory function
 
 It is a function that returns another function.
+
+
+## READ PERFORMANCE WITH INDEXES
+
+   ```mongoose
+      const doc=await features.query.explain();
+    ```

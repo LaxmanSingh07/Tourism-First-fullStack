@@ -10,13 +10,11 @@ const aliasTopTours = (req, res, next) => {
   next();
 };
 
-const getAllTours=factory.getAll(Tour);
-const getTour=factory.getOne(Tour,{path:'reviews'});
+const getAllTours = factory.getAll(Tour);
+const getTour = factory.getOne(Tour, { path: 'reviews' });
 const createTour = factory.createOne(Tour);
 const updateTour = factory.updateOne(Tour);
 const deleteTour = factory.deleteOne(Tour);
-
-
 
 //Aggregation pipeline :   it is a set of different stages that we can use to transform our documents into aggregated results
 

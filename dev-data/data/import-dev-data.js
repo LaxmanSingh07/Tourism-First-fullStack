@@ -4,6 +4,8 @@ const app = require('../../app');
 const Tour=require('./../../models/tourModel');
 const fs=require('fs');
 const User = require("../../models/userModel");
+const Review = require('../../models/reviewModel');
+
 require("dotenv").config();
 
 // const DB = process.env.DATABASE.replace(
@@ -31,7 +33,8 @@ mongoose.connect(DB, {
 
 // READ JSON FILE 
 const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, "utf-8"));
-const tours=JSON.parse(fs.readFileSync(`${__dirname}/tours.json`,'utf-8')); 
+const tours=JSON.parse(fs.readFileSync(`${__dirname}/tours.json`,'utf-8'));
+const reviews=JSON.parse(fs.readFileSync(`${__dirname}/reviews.json`,'utf-8'));
 
 // IMPORT DATA INTO DB 
 
@@ -39,6 +42,8 @@ const importData=async()=>{
 
     try{
         await Tour.create(tours); // array of objects is passing it will create a document for each object
+        await User.create(users,{validateBeforeSave:false}); // we are passing the array of objects and we are also passing the option that will disable the validation
+        await Review.create(reviews);
         console.log('Data successfully loaded');
     }
     catch(err){
@@ -53,6 +58,8 @@ const importData=async()=>{
 const deleteData=async()=>{
     try{
         await Tour.deleteMany(); // it will delete all the documents from the collection
+        await User.deleteMany();
+        await Review.deleteMany();
         console.log('Data successfully deleted');
     }
     catch(err){
@@ -81,6 +88,6 @@ else if(process.argv[2]==='--delete'){
 
 // const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`App running on PORT ${PORT}....`);
-});
+// app.listen(PORT, () => {
+//   console.log(`App running on PORT ${PORT}....`);
+// });

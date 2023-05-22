@@ -42,7 +42,8 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date, // password reset token will expire after 10 minutes (10*60*1000)
-  active: { // this is for the deletion of the user
+  active: {
+    // this is for the deletion of the user
     type: Boolean,
     default: true,
     select: false, // it will not show the active field in the output
@@ -79,10 +80,6 @@ userSchema.pre(/^find/, function (next) {
   this.find({ active: { $ne: false } }); // it will find all the documents where the active field is not equal to false
   next();
 });
-
-
-
-
 
 //instance method: methods that are available on all the documents of a certain collection
 

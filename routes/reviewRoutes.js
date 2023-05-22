@@ -16,11 +16,12 @@ const router = express.Router({ mergeParams: true });
 
 //GET /tour/234fad4/reviews --> nested route
 
+router.use(protect);
 router
   .route('/')
   .get(getAllReviews)
-  .post(protect, restrictTo('user'), setTourUserIds, createReview);
+  .post(restrictTo('user'), setTourUserIds, createReview);
 router.route('/:id').get(getReview)
-router.route('/:id').delete(deleteReview);
-router.route('/:id').patch(updateReview);
+router.route('/:id').patch(restrictTo("user","admin"),updateReview);
+router.route('/:id').delete(restrictTo("user","admin"),deleteReview);
 module.exports = router;

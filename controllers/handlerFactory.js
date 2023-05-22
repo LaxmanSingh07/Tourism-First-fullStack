@@ -78,7 +78,9 @@ exports.getAll=(Model)=> catchAsync(async (req, res, next) => {
       .limitFields()
       .paginate();
   
-    const doc = await features.query;
+      
+      const doc=await features.query;
+      // const doc=await features.query.explain();
     //if you are searching some categories which doesn't exists then it is not a good practice to show the 404
   
     res.status(200).json({
