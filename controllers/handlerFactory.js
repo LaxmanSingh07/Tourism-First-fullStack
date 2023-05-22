@@ -1,6 +1,7 @@
 //generatlization of the function
 const catchAsync = require('../utils/catchAsync.js');
 const AppError = require('../utils/appError.js');
+const APIFeatures = require('./../utils/apiFeatures');
 exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const doc = await Model.findByIdAndDelete(req.params.id);
@@ -10,7 +11,7 @@ exports.deleteOne = (Model) =>
     res.status(204).json({
       status: 'sucess',
       data: null,
-      message: 'Tour deleted successfully',
+      message: 'Model deleted successfully',
     });
   });
 
@@ -58,6 +59,31 @@ exports.getOne = (Model, popOptions) =>
     }
     res.status(200).json({
       status: 'sucess',
+      data: {
+        doc,
+      },
+    });
+  });
+
+exports.getAll=(Model)=> catchAsync(async (req, res, next) => {
+
+
+  //to allow for nested Get Reviews on tour
+  let filter={};
+  if(req.params.tourId) filter={tour:req.params.tourId};
+
+    const features = new APIFeatures(Model.find(filter), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+  
+    const doc = await features.query;
+    //if you are searching some categories which doesn't exists then it is not a good practice to show the 404
+  
+    res.status(200).json({
+      status: 'success',
+      results: doc.length,
       data: {
         doc,
       },

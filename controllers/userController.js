@@ -1,18 +1,7 @@
 const User = require('../models/userModel');
-const catchAsync = require('../utils/catchAsync');
+// const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const factory = require('./handlerFactory');
-const getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
-
-  res.status(200).json({
-    status: 'success',
-    results: users.length,
-    data: {
-      users,
-    },
-  });
-});
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -31,22 +20,22 @@ const updateMe = async (req, res, next) => {
       new AppError(
         'This route is not for password updates. Please use /updateMyPassword',
         400
-      )
-    );
-  }
+        )
+        );
+      }
+      
+      // we will use the findByIdAndUpdate method to update the user document
+      // we are not dealing with the password here because we have already handled that in the userModel.js file
+      //chagning of role is not allowed here
+      
+      //FILTERED THE UNWANTED FIELDS
+      
+      const filteredBody = filterObj(req.body, 'name', 'email'); // we are filtering the body so that the user can only update the name and email
 
-  // we will use the findByIdAndUpdate method to update the user document
-  // we are not dealing with the password here because we have already handled that in the userModel.js file
-  //chagning of role is not allowed here
-
-  //FILTERED THE UNWANTED FIELDS
-
-  const filteredBody = filterObj(req.body, 'name', 'email'); // we are filtering the body so that the user can only update the name and email
-
-  // 2> update user document
-  const updatedUser = await User.findByIdAndUpdate(
-    req.user.id,
-    {
+      // 2> update user document
+      const updatedUser = await User.findByIdAndUpdate(
+        req.user.id,
+        {
       name: req.body.name,
       email: req.body.email,
     },
@@ -54,13 +43,13 @@ const updateMe = async (req, res, next) => {
       new: true, // it will return the new document
       runValidators: true, // it will run the validators again
     }
-  );
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      user: updatedUser,
-    },
+    );
+    
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user: updatedUser,
+      },
   });
 };
 
@@ -75,6 +64,7 @@ const createUser = (req, res) => {
 };
 
 
+const getAllUsers =factory.getAll(User);
 const updateUser= factory.updateOne(User);
 const deleteUser = factory.deleteOne(User)
 
