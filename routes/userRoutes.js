@@ -6,7 +6,8 @@ const {
   updateUser,
   updateMe,
   getUser,
-  deleteMe
+  deleteMe,
+  getMe
 } = require('./../controllers/userController');
 
 const {
@@ -16,6 +17,7 @@ const {
   resetPassword,
   protect,
   updatePassword,
+
 } = require('./../controllers/authController');
 
 const router = express.Router();
@@ -27,6 +29,7 @@ router.patch('/resetPassword/:token', resetPassword);
 
 //params middleware
 
+router.get("/me",protect,getMe,getUser);
 router.patch('/updateMyPassword', protect, updatePassword);
 router.patch('/updateMe', protect, updateMe);
 router.delete('/deleteMe', protect, deleteMe);

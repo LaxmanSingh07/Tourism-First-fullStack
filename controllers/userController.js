@@ -11,6 +11,10 @@ const filterObj = (obj, ...allowedFields) => {
   return newObj;
 };
 
+const getMe=(req,res,next)=>{
+  req.params.id=req.user.id;
+  next();
+}
 //update the profile of the user
 
 const updateMe = async (req, res, next) => {
@@ -59,7 +63,7 @@ const getUser=factory.getOne(User);
 const createUser = (req, res) => {
   res.status(500).json({
     status: 'error',
-    message: 'This route is not defined! please sign instead',
+    message: 'This route is not defined! please sign in instead',
   });
 };
 
@@ -96,4 +100,5 @@ module.exports = {
   deleteUser,
   updateMe,
   deleteMe,
+  getMe
 };
