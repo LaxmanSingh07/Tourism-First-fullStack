@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const factory = require('./handlerFactory');
 const getAllUsers = catchAsync(async (req, res, next) => {
   const users = await User.find();
 
@@ -77,26 +78,18 @@ const createUser = (req, res) => {
   });
 };
 
-const updateUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined',
-  });
-};
+// const updateUser = (req, res) => {
+//   res.status(500).json({
+//     status: 'error',
+//     message: 'This route is not yet defined',
+//   });
+// };
 
-const deleteUser = (req, res) => {
-  try {
-    res.status(500).json({
-      status: 'error',
-      message: 'This route is not yet defined',
-    });
-  } catch (error) {
-    res.status(404).json({
-      status: 'fail',
-      message: 'Invalid data sent!',
-    });
-  }
-};
+
+//it is only for the admin
+//don't update passwords with this
+const updateUser= factory.updateOne(User);
+const deleteUser = factory.deleteOne(User)
 
 //we will not detete the user from the database but we will set the active field to false
 //because in future user might want to reactivate his account

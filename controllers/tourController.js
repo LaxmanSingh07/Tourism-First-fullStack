@@ -2,6 +2,7 @@ const AppError = require('../utils/appError');
 const Tour = require('./../models/tourModel');
 const APIFeatures = require('./../utils/apiFeatures');
 const catchAsync = require('./../utils/catchAsync');
+const factory = require('./handlerFactory');
 const aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
   req.query.sort = '-ratingsAverage,price';
@@ -29,7 +30,17 @@ const getAllTours = catchAsync(async (req, res, next) => {
 });
 
 const getTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findById(req.params.id);
+//   const tour = await Tour.findById(req.params.id).populate({
+//     path:'guides',
+//     select:'-__v -passwordChangedAt',
+//     }); // populate will replace the id with the actual data
+// // Tour.findOneAndDelete({__id:req.params.id}})
+
+const tour = await Tour.findById(req.params.id).populate('reviews');
+
+
+  // console.log(tour);
+
 
   if (!tour) {
     return next(new AppError('No tour found with that ID', 404));
@@ -42,45 +53,21 @@ const getTour = catchAsync(async (req, res, next) => {
   });
 });
 
-const createTour = catchAsync(async (req, res, next) => {
-  const newTour = await Tour.create(req.body);
-  console.log(req.body);
-  res.status(201).json({
-    status: 'sucess',
-    data: {
-      tour: newTour,
-    },
-  });
-});
+const createTour = factory.createOne(Tour);
+const updateTour = factory.updateOne(Tour);
+const deleteTour = factory.deleteOne(Tour);
 
-const updateTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true, //updated document will be returned
-    runValidators: true, // it will run the validators again
-  });
-  if (!tour) {
-    return next(new AppError('No tour found with that ID', 404));
-  }
-
-  res.status(200).json({
-    status: 'sucess',
-    data: {
-      tour,
-    },
-  });
-});
-
-const deleteTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findByIdAndDelete(req.params.id);
-  if (!tour) {
-    return next(new AppError('No tour found with that ID', 404));
-  }
-  res.status(204).json({
-    status: 'sucess',
-    data: null,
-    message: 'Tour deleted successfully',
-  });
-});
+// const deleteTour = catchAsync(async (req, res, next) => {
+//   const tour = await Tour.findByIdAndDelete(req.params.id);
+//   if (!tour) {
+//     return next(new AppError('No tour found with that ID', 404));
+//   }
+//   res.status(204).json({
+//     status: 'sucess',
+//     data: null,
+//     message: 'Tour deleted successfully',
+//   });
+// });
 
 //Aggregation pipeline :   it is a set of different stages that we can use to transform our documents into aggregated results
 

@@ -5,7 +5,7 @@ const catchAsync = require('./../utils/catchAsync');
 const jwt = require('jsonwebtoken');
 const AppError = require('./../utils/appError');
 const sendEmail = require('./../utils/email');
-
+require('dotenv').config();
 // console.log(User);
 
 //function to create a token
@@ -21,12 +21,15 @@ const createSendToken = (user, statusCode, res) => {
   
   //cookie options
 
+  console.log( process.env.JWT_COOKIE_EXPIRES_IN )
+
   const cookieOptions={
       expires: new Date(
-        Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 100 // it will convert the days into milliseconds
+        Date.now() +process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000 // it will convert the days into milliseconds
       ),
       httpOnly: true, // it will make sure that the cookie cannot be accessed or modified in any way by the browser
     }
+    console.log(cookieOptions.expires)
   
   if(process.env.NODE_ENV==='production') cookieOptions.secure=true;//// it will send the cookie only on the encrypted connection
 
@@ -86,8 +89,8 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
+    // console.log(token);
   }
-  // console.log(token);
 
   if (!token) {
     return next(
@@ -98,6 +101,8 @@ exports.protect = catchAsync(async (req, res, next) => {
   //2) Verification token
 
   // (promisefied version of the verify method)
+
+  // console.log(token);
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET); //
   // console.log(decoded);
 
