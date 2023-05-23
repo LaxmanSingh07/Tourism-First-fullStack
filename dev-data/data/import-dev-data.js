@@ -57,8 +57,8 @@ const importData=async()=>{
 
 const deleteData=async()=>{
     try{
-        await Tour.deleteMany(); // it will delete all the documents from the collection
-        await User.deleteMany();
+        // await Tour.deleteMany(); // it will delete all the documents from the collection
+        // await User.deleteMany();
         await Review.deleteMany();
         console.log('Data successfully deleted');
     }

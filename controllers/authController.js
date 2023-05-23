@@ -21,7 +21,7 @@ const createSendToken = (user, statusCode, res) => {
   
   //cookie options
 
-  console.log( process.env.JWT_COOKIE_EXPIRES_IN )
+  // console.log( process.env.JWT_COOKIE_EXPIRES_IN )
 
   const cookieOptions={
       expires: new Date(
@@ -29,7 +29,6 @@ const createSendToken = (user, statusCode, res) => {
       ),
       httpOnly: true, // it will make sure that the cookie cannot be accessed or modified in any way by the browser
     }
-    console.log(cookieOptions.expires)
   
   if(process.env.NODE_ENV==='production') cookieOptions.secure=true;//// it will send the cookie only on the encrypted connection
 

@@ -210,3 +210,8 @@ Notes:
 - we can't use arrow function in the validate property
 - we can't use the this keyword in the validate property
 - the validate property will not work on the update operation
+
+
+```
+Mongoose no longer allows executing the same query object twice. If you do, you'll get a Query was already executed error. Executing the same query instance twice is typically indicative of mixing callbacks and promises, but if you need to execute the same query twice, you can call Query#clone() to clone the query and re-execute it.
+```

@@ -96,6 +96,33 @@ const getMonthlyPlan = catchAsync(async (req, res, next) => {
   });
 });
 
+// '/tours-wthin/:distance/center/:latlng/unit/:unit'
+
+const getToursWithin = async (req, res, next) => {
+  const { distance, latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+
+const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1; // 3963.2 is the radius of the earth in miles and 6378.1 is the radius of the earth in kilometers
+
+  if (!lat || !lng) {
+    next(
+      new AppError('please provide latitue and logitude in the format ', 400)
+    );
+  }
+
+  const tours = await Tour.find({
+    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+  });
+
+  res.status(200).json({
+    status: 'success',
+    results: tours.length,
+    data: {
+      data: tours,
+    },
+  });
+};
+
 module.exports = {
   getAllTours,
   getTour,
@@ -105,4 +132,5 @@ module.exports = {
   aliasTopTours,
   getTourStats,
   getMonthlyPlan,
+  getToursWithin,
 };

@@ -1,7 +1,7 @@
 // review  /rating /createdAt /ref to tour /ref to user
 
 const mongoose = require('mongoose');
-
+const Tour = require('./tourModel');
 const reviewSchema = new mongoose.Schema(
   {
     review: {
@@ -36,6 +36,11 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
+
+
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true }) // this will make sure that the combination of tour and user is always unique
+
+
 // it is for the populate method
 reviewSchema.pre(/^find/, function (next) {
   // this.populate({
@@ -59,7 +64,7 @@ reviewSchema.statics.calcAverageRatings = async function (tourId) {
 
   //this points to the current model
 
-  const stats=await this.aggregate([
+  const stats = await this.aggregate([
     {
       $match: { tour: tourId },
     },
@@ -73,15 +78,48 @@ reviewSchema.statics.calcAverageRatings = async function (tourId) {
     },
   ]);
 
-  console.log(stats);
+  // console.log(stats);
 
-
+  if(stats.length > 0){
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: stats[0].nRating,
+      ratingsAverage: stats[0].avgRating,
+    });
+  }
+  else{
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: 0,
+      ratingsAverage: 4.5,
+    });
+  }
 };
 
 reviewSchema.post('save', function () {
-
-  //this points to the current review 
+  //post doesn't have any access to the next function
   this.constructor.calcAverageRatings(this.tour);
 });
+
+//findByAndUpdate
+//findByAndDelete
+
+//pre middleware for findByIdAndUpdate and findByIdAndDelete
+
+reviewSchema.pre(/^findOneAnd/, async function (next) {
+  //we are using the pre middleware because we want to get access to the current document
+  //findOne is the shorthand for findByIdAndUpdate and findByIdAndDelete
+
+  //goal is to get access to the current document
+
+  this.r = await this.clone().findOne(); //we are storing the current document in the current query
+  //clone is used to create a copy of the current query object
+  //it will allow us to access the document in the post middleware
+  next();
+});
+
+reviewSchema.post(/^findOneAnd/, async function () {
+  //await this.findOne(); does NOT work here, query has already executed
+  await this.r.constructor.calcAverageRatings(this.r.tour);
+});
+
 const Review = mongoose.model('Review', reviewSchema);
 module.exports = Review;

@@ -8,6 +8,7 @@ const {
   createTour,
   updateTour,
   deleteTour,
+  getToursWithin
 } = require('./../controllers/tourController');
 const { protect, restrictTo } = require('../controllers/authController');
 const reviewRouter = require('./../routes/reviewRoutes');
@@ -24,6 +25,12 @@ router
   .route('/')
   .get(getAllTours)
   .post(protect, restrictTo('admin', 'lead-guide'), createTour);
+
+router
+  .route('/tours-within/:distance/center/:latlng/unit/:unit')
+  .get(getToursWithin);
+// /tours-distance?distance=223&center=-40,45,unit=mi
+// /tours-distance/233/center/-40,45/unit/mi
 
 router
   .route('/:id')
