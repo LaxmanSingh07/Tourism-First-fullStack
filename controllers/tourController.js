@@ -123,6 +123,53 @@ const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1; // 3963.2 
   });
 };
 
+
+//aggregate pipeline for calculating distances
+
+const getDistances = async (req, res, next) => {
+  const { latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+
+const multiplier = unit === 'mi' ? 0.000621371 : 0.001; // 3963.2 is the radius of the earth in miles and 6378.1 is the radius of the earth in kilometers
+
+  if (!lat || !lng) {
+    next(
+      new AppError('please provide latitue and logitude in the format ', 400)
+    );
+  }
+
+   // it will always be the first stage in the pipeline
+        // it requires at least one geospatial index
+  const distances=await Tour.aggregate([
+    {
+      $geoNear: {
+        near: {
+          type: 'Point',
+          coordinates: [lng * 1, lat * 1], // multiplying by 1 to convert string into a number
+        },
+        distanceField: 'distance', // it will add a new field to the document
+        distanceMultiplier: multiplier,
+      },
+    },
+  
+    {
+      $project: { // it will only show the fields that we want to show
+        distance: 1,
+        name: 1,
+      },
+    }, 
+  ]);
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      data: distances,
+    },
+  });
+};
+
+
+
 module.exports = {
   getAllTours,
   getTour,
@@ -133,4 +180,5 @@ module.exports = {
   getTourStats,
   getMonthlyPlan,
   getToursWithin,
+  getDistances
 };

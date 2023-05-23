@@ -21,7 +21,7 @@ router
   .route('/')
   .get(getAllReviews)
   .post(restrictTo('user'), setTourUserIds, createReview);
-router.route('/:id').get(getReview)
-router.route('/:id').patch(restrictTo("user","admin"),updateReview);
-router.route('/:id').delete(restrictTo("user","admin"),deleteReview);
+router.route('/:id').get(getReview);
+router.route('/:id').patch(restrictTo('user', 'admin'), updateReview);
+router.route('/:id').delete(restrictTo('user', 'admin'), deleteReview);
 module.exports = router;

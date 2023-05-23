@@ -131,6 +131,7 @@ const tourSchema = new mongoose.Schema(
 
 tourSchema.index({price:1,ratingsAverage:-1}); // 1 denotes the ascending order and -1 denotes the descending order
 tourSchema.index({slug:1}); 
+tourSchema.index({startLocation:'2dsphere'}); // this is used for geospatial data
 
 //the reason to use the regular function is that we need this keyword in this function
 
@@ -182,14 +183,14 @@ tourSchema.post(/^find/, function (docs, next) {
 
 // AGGREGATION MIDDLEWARE
 
-tourSchema.pre('aggregate', function (next) {
-  //adding a new stage at the beginning of the aggregation pipeline
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+// tourSchema.pre('aggregate', function (next) {
+//   //adding a new stage at the beginning of the aggregation pipeline
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
 
-  console.log(this.pipeline()); // this is the array of all the stages in the aggregation pipeline
+//   // console.log(this.pipeline()); // this is the array of all the stages in the aggregation pipeline
 
-  next();
-});
+//   next();
+// });
 
 const Tour = mongoose.model('Tour', tourSchema); // this is convention to use capital letter for model name
 

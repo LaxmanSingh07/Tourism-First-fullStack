@@ -8,7 +8,8 @@ const {
   createTour,
   updateTour,
   deleteTour,
-  getToursWithin
+  getToursWithin,
+  getDistances
 } = require('./../controllers/tourController');
 const { protect, restrictTo } = require('../controllers/authController');
 const reviewRouter = require('./../routes/reviewRoutes');
@@ -21,13 +22,17 @@ router.route('/tour-stats').get(getTourStats);
 router
   .route('/monthly-plan/:year')
   .get(protect, restrictTo('admin', 'lead-guide', 'guide'), getMonthlyPlan);
-router
+  
+  router.route('/distances/:latlng/unit/mi').get(getDistances);
+  
+  
+  router
   .route('/')
   .get(getAllTours)
   .post(protect, restrictTo('admin', 'lead-guide'), createTour);
 
 router
-  .route('/tours-within/:distance/center/:latlng/unit/:unit')
+  .route('/tours-within/:distance/center/:latlng/unit/mi')
   .get(getToursWithin);
 // /tours-distance?distance=223&center=-40,45,unit=mi
 // /tours-distance/233/center/-40,45/unit/mi
