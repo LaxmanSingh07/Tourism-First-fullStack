@@ -215,3 +215,13 @@ Notes:
 ```
 Mongoose no longer allows executing the same query object twice. If you do, you'll get a Query was already executed error. Executing the same query instance twice is typically indicative of mixing callbacks and promises, but if you need to execute the same query twice, you can call Query#clone() to clone the query and re-execute it.
 ```
+
+## Query and projections operators 
+
+### GeoSpatial Query Operators
+
+- $geoWithin : Selects geometries within a bounding geometry. The 2dsphere and 2d indexes support $geoWithin.
+- $geoIntersects : Selects geometries that intersect with a GeoJSON geometry. The 2dsphere index supports $geoIntersects.
+- $near : Returns geospatial objects in proximity to a point. Requires a geospatial index. The 2dsphere and 2d indexes support $near.
+- $nearSphere : Returns geospatial objects in proximity to a point on a sphere. Requires a geospatial index. The 2dsphere and 2d indexes support $nearSphere.
+  
